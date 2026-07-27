@@ -123,8 +123,22 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
   // Load from localStorage or fallback on mount
   useEffect(() => {
     const stored = localStorage.getItem('allCandidates');
-    if (!stored || JSON.parse(stored).length === 0) {
-      localStorage.setItem('allCandidates', JSON.stringify(DEFAULT_CANDIDATES));
+    const existing = stored ? JSON.parse(stored) : [];
+
+    // If empty or stale, seed full candidate dataset
+    if (existing.length < 10) {
+      // Merge Isha & Shivay with full profiles to preserve test logins
+      const mergedProfiles = Array.from(
+        new Map(
+          [...DEFAULT_CANDIDATES, ...profilesData].map((p: any) => {
+            const email = p.email || `${p.name.toLowerCase().replace(/\s+/g, '')}@gmail.com`;
+            return [email.toLowerCase().trim(), { ...p, email }];
+          })
+        ).values()
+      );
+
+      localStorage.setItem('allCandidates', JSON.stringify(mergedProfiles));
+      localStorage.setItem('jodimaker_profiles', JSON.stringify(mergedProfiles));
     }
 
     const storedProfiles = localStorage.getItem('jodimaker_profiles') || localStorage.getItem('allCandidates');
