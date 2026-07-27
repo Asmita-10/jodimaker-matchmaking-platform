@@ -1,18 +1,18 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import profilesData from '@/data/profiles.json';
+import Link from 'next/link';
 import { Profile, MatchResult } from '@/types';
 import LoginView from '@/components/LoginView';
 import ClientList from '@/components/ClientList';
 import ClientProfile from '@/components/ClientProfile';
 import MatchModal from '@/components/MatchModal';
 import { Toast } from '@/components/ui/Toast';
+import { useProfiles } from '@/context/ProfileContext';
 import { Heart, LogOut, Users, UserCheck, ShieldAlert, BarChart3, Star } from 'lucide-react';
 
-const profiles = profilesData as Profile[];
-
 export default function Home() {
+  const { profiles, resetToDefault } = useProfiles();
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [selectedClient, setSelectedClient] = useState<Profile | null>(null);
   const [activeMatch, setActiveMatch] = useState<MatchResult | null>(null);
@@ -57,7 +57,7 @@ export default function Home() {
     const females = profiles.filter(p => p.gender === 'Female').length;
     
     return { total, active, matched, pending, males, females };
-  }, []);
+  }, [profiles]);
 
   if (!isLoggedIn) {
     return <LoginView onLoginSuccess={handleLoginSuccess} />;
@@ -83,21 +83,36 @@ export default function Home() {
         </div>
 
         <div className="flex items-center gap-5">
-          <div className="text-right hidden sm:block">
-            <p className="text-xs font-bold text-[#1e1b4b]">Senior Matchmaker</p>
-            <p className="text-[9px] text-emerald-600 font-bold flex items-center gap-1 justify-end">
+          <Link 
+            href="/profile" 
+            className="flex items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer text-right group"
+            title="View Profile & SaaS Billing Portal"
+          >
+            <div className="hidden sm:block">
+              <p className="text-xs font-bold text-[#1e1b4b] group-hover:text-rose-500 transition-colors">Asmita Tiwari</p>
+              <p className="text-[9px] text-slate-400 font-bold">Senior Matchmaker</p>
+            </div>
+            <div className="w-8 h-8 bg-indigo-950 text-white rounded-full flex items-center justify-center font-bold text-xs shadow ring-2 ring-rose-200/50 group-hover:ring-rose-400 transition-all">
+              AT
+            </div>
+          </Link>
+
+          <div className="hidden sm:block h-6 w-px bg-[#f0eae0]"></div>
+
+          <div className="flex items-center gap-4">
+            <span className="text-[9px] text-emerald-600 font-bold flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
               Connected
-            </p>
+            </span>
+            <button 
+              onClick={handleLogout}
+              className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-[#f43f5e] bg-white hover:bg-[#fdf3f3] px-3 py-2 rounded-xl border border-[#f0eae0] hover:border-[#fbc4c4] transition-all duration-300 font-bold cursor-pointer"
+              title="Log Out"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              Logout
+            </button>
           </div>
-          <button 
-            onClick={handleLogout}
-            className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-[#f43f5e] bg-white hover:bg-[#fdf3f3] px-3.5 py-2 rounded-xl border border-[#f0eae0] hover:border-[#fbc4c4] transition-all duration-300 font-bold"
-            title="Log Out"
-          >
-            <LogOut className="w-3.5 h-3.5" />
-            Logout
-          </button>
         </div>
       </header>
 
@@ -188,13 +203,24 @@ export default function Home() {
                 {/* Database Demographics Verification Banner */}
                 <div className="p-4 bg-white border border-[#f5f1ea] rounded-2xl flex items-center justify-between text-[11px] text-slate-500 text-left shadow-[0_10px_35px_rgba(79,70,40,0.02)]">
                   <div>
-                    <span className="font-extrabold text-[#1e1b4b] block mb-0.5">Static Data Verification Loaded</span>
-                    We verified exactly 100 realistic profiles split: {metrics.males} Males and {metrics.females} Females (50/50 split).
+                    <span className="font-extrabold text-[#1e1b4b] block mb-0.5">Data Storage Pipeline Active</span>
+                    We verified {metrics.total} profiles split: {metrics.males} Males and {metrics.females} Females.
                   </div>
-                  <span className="text-[9px] bg-[#faf7f2] border border-[#f0eae0] text-[#b45309] px-2.5 py-1 rounded-lg font-extrabold uppercase tracking-wider flex items-center gap-0.5">
-                    <Star className="w-3 h-3 text-[#b45309] fill-current" />
-                    Premium Edition
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => {
+                        resetToDefault();
+                        setToastMessage("Cleared duplicates and restored clean state!");
+                      }}
+                      className="text-[9px] bg-rose-50 hover:bg-rose-100 text-[#e11d48] px-2.5 py-1 rounded-lg font-extrabold uppercase tracking-wider transition-all duration-300 border border-rose-100/50 cursor-pointer"
+                    >
+                      Clean Duplicate Profiles & Reset Storage
+                    </button>
+                    <span className="text-[9px] bg-[#faf7f2] border border-[#f0eae0] text-[#b45309] px-2.5 py-1 rounded-lg font-extrabold uppercase tracking-wider flex items-center gap-0.5">
+                      <Star className="w-3 h-3 text-[#b45309] fill-current" />
+                      Premium Edition
+                    </span>
+                  </div>
                 </div>
 
               </div>

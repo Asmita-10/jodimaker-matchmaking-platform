@@ -1357,34 +1357,7 @@
     ],
     "status": "Pending Match"
   },
-  {
-    "id": "M-118",
-    "name": "Varun Chawla",
-    "gender": "Male",
-    "age": 25,
-    "city": "Delhi",
-    "maritalStatus": "Divorced",
-    "height": 176,
-    "heightStr": "5'9\"",
-    "income": 27,
-    "incomeStr": "27 LPA",
-    "company": "Tata Motors",
-    "designation": "Project Manager",
-    "religion": "Sikh",
-    "caste": "Arora",
-    "kids": "Yes",
-    "relocate": "Yes",
-    "pets": "No",
-    "dietaryPreference": "Veg",
-    "manglikStatus": "Anshik",
-    "coreValues": [
-      "Spiritual",
-      "Family-oriented",
-      "Adventurous",
-      "Fitness Enthusiast"
-    ],
-    "status": "Active"
-  },
+
   {
     "id": "F-126",
     "name": "Tanvi Shinde",

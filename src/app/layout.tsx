@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Outfit, Inter, Playfair_Display } from "next/font/google";
+import { ProfileProvider } from "@/context/ProfileContext";
 import "./globals.css";
 
 const outfit = Outfit({
@@ -33,7 +34,11 @@ export default function RootLayout({
       lang="en"
       className={`${outfit.variable} ${inter.variable} ${playfair.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-[#fcfaf6]">{children}</body>
+      <body className="min-h-full flex flex-col bg-[#fcfaf6]">
+        <ProfileProvider>
+          {children}
+        </ProfileProvider>
+      </body>
     </html>
   );
 }

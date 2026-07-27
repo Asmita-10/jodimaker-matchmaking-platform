@@ -184,7 +184,7 @@ export default function ClientProfile({ client, allProfiles, onOpenMatchModal, o
             <div className="pt-2">
               <span className="text-[10px] text-slate-450 uppercase font-extrabold tracking-wider block mb-2">Core Values</span>
               <div className="flex flex-wrap gap-2">
-                {client.coreValues.map((value, idx) => (
+                {(client.coreValues || []).map((value, idx) => (
                   <span 
                     key={idx} 
                     className="text-xs bg-[#fdf3f3] border border-[#fce7e7] text-[#f43f5e] px-3.5 py-1.5 rounded-xl font-bold flex items-center gap-1 shadow-sm"

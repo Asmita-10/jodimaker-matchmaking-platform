@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+html {
+  font-size: 17px; /* Increases overall default rem scaling slightly */
+}
+
 @theme {
   --font-sans: var(--font-outfit), var(--font-inter), sans-serif;
   --font-serif: var(--font-serif), serif;

@@ -32,13 +32,16 @@ export default function ClientList({ profiles, selectedClientId, onSelectClient 
   };
 
   const filteredProfiles = useMemo(() => {
-    return profiles.filter(profile => {
-      const matchesSearch = 
-        profile.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        profile.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        profile.designation.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        profile.company.toLowerCase().includes(searchQuery.toLowerCase());
-      
+    return profiles.filter((profile) => {
+      const query = searchQuery.toLowerCase().trim();
+
+      // Safely evaluate string properties with nullish coalescing
+      const nameMatch = (profile.name ?? '').toLowerCase().includes(query);
+      const cityMatch = (profile.city ?? '').toLowerCase().includes(query);
+      const designationMatch = (profile.designation ?? '').toLowerCase().includes(query);
+      const companyMatch = (profile.company ?? '').toLowerCase().includes(query);
+
+      const matchesSearch = nameMatch || cityMatch || designationMatch || companyMatch;
       const matchesGender = genderFilter === 'All' || profile.gender === genderFilter;
       const matchesCity = cityFilter === 'All' || profile.city === cityFilter;
       const matchesMarital = maritalFilter === 'All' || profile.maritalStatus === maritalFilter;
@@ -196,6 +199,11 @@ export default function ClientList({ profiles, selectedClientId, onSelectClient 
                     <span className="text-[11px] text-slate-400 font-bold">
                       ({profile.age})
                     </span>
+                    {profile.isDynamic && (
+                      <span className="text-[8px] bg-[#e11d48] text-white font-extrabold px-1.5 py-0.25 rounded-md uppercase tracking-wider animate-pulse">
+                        NEW
+                      </span>
+                    )}
                   </div>
 
                   <p className="text-[11px] text-slate-500 font-medium">

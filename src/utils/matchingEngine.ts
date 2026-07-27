@@ -143,7 +143,9 @@ export function calculateMatchScore(client: Profile, candidate: Profile): MatchR
     breakdown['relocation'] = { score: relocateScore, max: 35, reason: relocateReason };
 
     // 3. Core Values Match (Max 30)
-    const sharedValues = client.coreValues.filter(val => candidate.coreValues.includes(val));
+    const clientValues = Array.isArray(client.coreValues) ? client.coreValues : [];
+    const candidateValues = Array.isArray(candidate.coreValues) ? candidate.coreValues : [];
+    const sharedValues = clientValues.filter(val => candidateValues.includes(val));
     const valuesScore = Math.min(30, sharedValues.length * 15);
     let valuesReason = '';
     if (sharedValues.length > 0) {

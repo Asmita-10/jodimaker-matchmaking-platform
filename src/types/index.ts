@@ -20,6 +20,25 @@ export interface Profile {
   manglikStatus: 'Yes' | 'No' | 'Anshik';
   coreValues: string[];
   status: 'Active' | 'Pending Match' | 'Matched' | 'On Hold';
+  isDynamic?: boolean;
+  email?: string;
+}
+
+export interface ChatMessage {
+  senderId: string;
+  text: string;
+  timestamp: string;
+}
+
+export interface MatchPair {
+  id: string;
+  candidate1Id: string;
+  candidate2Id: string;
+  compatibilityScore: number;
+  highlights: string;
+  status: 'Pending Outreach' | 'Connected' | 'Scheduled Call';
+  dateMatched: string;
+  messages: ChatMessage[];
 }
 
 export interface ScoreBreakdown {

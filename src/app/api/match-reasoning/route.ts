@@ -29,7 +29,7 @@ Client:
 - Profession: ${client.designation} at ${client.company}
 - Religion/Caste: ${client.religion} (${client.caste})
 - Lifestyle: Kids: ${client.kids}, Relocation openness: ${client.relocate}, Pets: ${client.pets}, Diet: ${client.dietaryPreference}, Manglik: ${client.manglikStatus}
-- Core Values: ${client.coreValues.join(', ')}
+- Core Values: ${client.coreValues ? client.coreValues.join(', ') : 'None'}
 
 Candidate Match:
 - Name: ${candidate.name} (${candidate.gender})
@@ -41,7 +41,7 @@ Candidate Match:
 - Profession: ${candidate.designation} at ${candidate.company}
 - Religion/Caste: ${candidate.religion} (${candidate.caste})
 - Lifestyle: Kids: ${candidate.kids}, Relocation openness: ${candidate.relocate}, Pets: ${candidate.pets}, Diet: ${candidate.dietaryPreference}, Manglik: ${candidate.manglikStatus}
-- Core Values: ${candidate.coreValues.join(', ')}
+- Core Values: ${candidate.coreValues ? candidate.coreValues.join(', ') : 'None'}
 
 Matching Engine Score: ${score}%
 
@@ -87,10 +87,12 @@ Make sure you return ONLY the JSON object. Do not include markdown code block sy
     }
 
     // Fallback generator
-    const sharedValues = client.coreValues.filter(val => candidate.coreValues.includes(val));
+    const clientCoreValues = Array.isArray(client.coreValues) ? client.coreValues : [];
+    const candidateCoreValues = Array.isArray(candidate.coreValues) ? candidate.coreValues : [];
+    const sharedValues = clientCoreValues.filter(val => candidateCoreValues.includes(val));
     const valuesText = sharedValues.length > 0 
       ? `sharing key core values like ${sharedValues.join(' and ')}`
-      : `complementing core values like ${client.coreValues[0]} and ${candidate.coreValues[0]}`;
+      : `complementing core values like ${clientCoreValues[0] || 'Family'} and ${candidateCoreValues[0] || 'Respect'}`;
 
     const locationText = client.city === candidate.city
       ? `both living in ${client.city}, minimizing any location challenges`
@@ -104,7 +106,8 @@ Make sure you return ONLY the JSON object. Do not include markdown code block sy
 
     const compatibility = `Based on their biodata, ${client.name} and ${candidate.name} demonstrate a highly compatible match (Scoring ${score}%). Their alignment is anchored in ${valuesText}, alongside ${locationText}. Professionally, ${professionText}. Additionally, they share excellent lifestyle harmony; ${lifestyleText} Astrologically, their Manglik status is ${client.manglikStatus} and ${candidate.manglikStatus} respectively, suggesting a comfortable compatibility.`;
 
-    const outreach = `Dear ${candidate.name.split(' ')[0]},\n\nI hope you are doing well! I am reaching out to share a high-potential match from our premium circle. ${client.name} is a ${client.age}-year-old ${client.designation} at ${client.company} based in ${client.city}. Based on our matching analysis, the two of you share key core values of ${client.coreValues.slice(0, 2).join(' & ')} and have highly aligned lifestyle goals. If you are open to reviewing their profile, I'd be delighted to share their detailed biodata and help facilitate a warm introduction.\n\nWarm regards,\nYour Personal Matchmaker`;
+    const outreachShared = clientCoreValues.slice(0, 2).join(' & ') || 'mutual respect';
+    const outreach = `Dear ${candidate.name.split(' ')[0]},\n\nI hope you are doing well! I am reaching out to share a high-potential match from our premium circle. ${client.name} is a ${client.age}-year-old ${client.designation} at ${client.company} based in ${client.city}. Based on our matching analysis, the two of you share key core values of ${outreachShared} and have highly aligned lifestyle goals. If you are open to reviewing their profile, I'd be delighted to share their detailed biodata and help facilitate a warm introduction.\n\nWarm regards,\nYour Personal Matchmaker`;
 
     return NextResponse.json({ compatibility, outreach });
 
