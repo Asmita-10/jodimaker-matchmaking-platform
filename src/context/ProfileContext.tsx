@@ -91,12 +91,42 @@ interface ProfileContextType {
 
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
 
+const DEFAULT_CANDIDATES = [
+  {
+    id: 'cand_isha_01',
+    name: 'Isha',
+    email: 'isha@gmail.com',
+    password: 'isha',
+    gender: 'female',
+    city: 'Mumbai',
+    designation: 'Product Designer',
+    company: 'Design Studio',
+    age: '27'
+  },
+  {
+    id: 'shivay-profile',
+    name: 'Shivay',
+    email: 'shivay@gmail.com',
+    password: 'password',
+    gender: 'male',
+    city: 'Mumbai',
+    designation: 'Software Engineer',
+    company: 'Tech Corp',
+    age: '29'
+  }
+];
+
 export function ProfileProvider({ children }: { children: React.ReactNode }) {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [matches, setMatches] = useState<MatchPair[]>([]);
 
   // Load from localStorage or fallback on mount
   useEffect(() => {
+    const stored = localStorage.getItem('allCandidates');
+    if (!stored || JSON.parse(stored).length === 0) {
+      localStorage.setItem('allCandidates', JSON.stringify(DEFAULT_CANDIDATES));
+    }
+
     const storedProfiles = localStorage.getItem('jodimaker_profiles') || localStorage.getItem('allCandidates');
     let allProfiles: Profile[] = [];
     if (storedProfiles) {
