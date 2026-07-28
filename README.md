@@ -1,36 +1,45 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 💍 JodiMaker — AI-Powered Dual-Portal Matchmaking Platform
 
-## Getting Started
+**JodiMaker** is an enterprise-grade B2B2C matchmaking platform built for modern matrimonial agencies and matchmakers. It bridges operational CRM capabilities for matchmakers with an aesthetic, private client workspace for candidates.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## ✨ Key Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 🏢 1. Matchmaker Admin Portal (B2B Operational Suite)
+* **Real-Time Client Directory:** Filter, search, and manage candidate profiles with safe string normalization.
+* **Dynamic Match Pairing Engine:** Real-time reverse-chronological feed showing mutual connections and candidate interactions.
+* **AI Match Report Synthesizer:** Instant generation of personalized introduction proposals.
+* **AI Credit Rate-Limiter:** Built-in credit balance tracking and top-up mechanism.
+* **SaaS Tier & Billing Calculator:** Interactive team plan calculator with simulated Stripe checkout and dynamic PDF invoice generation.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 👥 2. Candidate Portal (B2C Workspace)
+* **Multi-Step Onboarding Wizard:** Clean, 3-stage profile setup (*Personal* ➔ *Professional* ➔ *Cultural*).
+* **Dynamic Gender Matching:** Automatic opposite-gender recommendation feed based on client preferences.
+* **Direct Messaging Portal:** Real-time candidate-to-candidate chat interface unlocked upon mutual connection.
+* **Glassmorphic Aesthetic UI:** Warm, modern design system powered by customized palette (`#f64d68`).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 🛠️ Tech Stack & Architecture
 
-To learn more about Next.js, take a look at the following resources:
+* **Framework:** [Next.js](https://nextjs.org/) (App Router & Client Hydration Safety)
+* **Language:** [TypeScript](https://www.typescriptlang.org/)
+* **Styling:** [Tailwind CSS](https://tailwindcss.com/) + Glassmorphism / Custom Palette (`#f64d68`)
+* **Icons:** [Lucide React](https://lucide.dev/)
+* **State & Data Persistence:** React Context API + LocalStorage Client Hydration Sync
+* **PDF Export:** `jspdf`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🚀 Getting Started
 
-## Deploy on Vercel
+### Prerequisites
+Make sure you have Node.js (v18+ recommended) and npm/pnpm/yarn installed.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Installation
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. **Clone the repository:**
+   ```bash
+   git clone [https://github.com/YOUR_USERNAME/jodimaker-matchmaking-platform.git](https://github.com/YOUR_USERNAME/jodimaker-matchmaking-platform.git)
+   cd jodimaker-matchmaking-platform
