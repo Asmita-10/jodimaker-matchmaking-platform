@@ -120,26 +120,47 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [matches, setMatches] = useState<MatchPair[]>([]);
 
-  // Load from localStorage or fallback on mount
+  // Load from API or localStorage fallback on mount
   useEffect(() => {
-    const stored = localStorage.getItem('allCandidates');
-    const existing = stored ? JSON.parse(stored) : [];
+    async function loadData() {
+      let fetchedProfiles: Profile[] = [];
+      let useApi = false;
 
-    // If empty or stale, seed full candidate dataset
-    if (existing.length < 10) {
-      // Merge Isha & Shivay with full profiles to preserve test logins
-      const mergedProfiles = Array.from(
-        new Map(
-          [...DEFAULT_CANDIDATES, ...profilesData].map((p: any) => {
-            const email = p.email || `${p.name.toLowerCase().replace(/\s+/g, '')}@gmail.com`;
-            return [email.toLowerCase().trim(), { ...p, email }];
-          })
-        ).values()
-      );
+      try {
+        const res = await fetch('/api/candidates');
+        const data = await res.json();
+        if (res.ok && data.success && data.candidates) {
+          fetchedProfiles = data.candidates;
+          useApi = true;
+        }
+      } catch (err) {
+        console.warn('API fetch failed, falling back to localStorage');
+      }
 
-      localStorage.setItem('allCandidates', JSON.stringify(mergedProfiles));
-      localStorage.setItem('jodimaker_profiles', JSON.stringify(mergedProfiles));
-    }
+      if (useApi) {
+        // We have MongoDB data, set it and cache in localStorage for sync
+        localStorage.setItem('allCandidates', JSON.stringify(fetchedProfiles));
+        localStorage.setItem('jodimaker_profiles', JSON.stringify(fetchedProfiles));
+      } else {
+        // Fallback logic
+        const stored = localStorage.getItem('allCandidates');
+        const existing = stored ? JSON.parse(stored) : [];
+
+        // If empty or stale, seed full candidate dataset locally
+        if (existing.length < 10) {
+          const mergedProfiles = Array.from(
+            new Map(
+              [...DEFAULT_CANDIDATES, ...profilesData].map((p: any) => {
+                const email = p.email || `${p.name.toLowerCase().replace(/\s+/g, '')}@gmail.com`;
+                return [email.toLowerCase().trim(), { ...p, email }];
+              })
+            ).values()
+          );
+
+          localStorage.setItem('allCandidates', JSON.stringify(mergedProfiles));
+          localStorage.setItem('jodimaker_profiles', JSON.stringify(mergedProfiles));
+        }
+      }
 
     const storedProfiles = localStorage.getItem('jodimaker_profiles') || localStorage.getItem('allCandidates');
     let allProfiles: Profile[] = [];
@@ -280,9 +301,25 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
 
     setMatches(mappedMatches);
     localStorage.setItem('jodimaker_matches', JSON.stringify(mappedMatches));
+    }
+    
+    loadData();
   }, []);
 
-  const addCandidateProfile = (newProfile: Omit<Profile, 'id'> & { id?: string }) => {
+  const addCandidateProfile = async (newProfile: Omit<Profile, 'id'> & { id?: string }) => {
+    // Attempt API update in the background
+    try {
+      if (newProfile.email) {
+        await fetch('/api/candidates', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newProfile)
+        });
+      }
+    } catch (err) {
+      console.warn("Failed to sync profile update to MongoDB", err);
+    }
+
     setProfiles(prev => {
       const activeEmail = newProfile.email?.toLowerCase().trim();
       
@@ -360,6 +397,22 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
   };
 
   const sendChatMessage = (pairId: string, senderId: string, text: string) => {
+    // Attempt API sync in the background
+    try {
+      const isShivay = senderId === 'shivay-profile' || senderId === 'shivay@gmail.com';
+      const senderEmail = isShivay ? 'shivay@gmail.com' : 'isha@gmail.com';
+      const receiverEmail = isShivay ? 'isha@gmail.com' : 'shivay@gmail.com';
+      const senderName = isShivay ? 'Shivay' : 'Isha';
+      
+      fetch('/api/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ senderEmail, receiverEmail, senderName, text })
+      }).catch(() => {});
+    } catch (err) {
+      console.warn("Failed to sync message to MongoDB", err);
+    }
+
     if (pairId === 'match_shivay_isha') {
       const chatSeed = localStorage.getItem('chat_shivay_isha');
       const messages = chatSeed ? JSON.parse(chatSeed) : [];

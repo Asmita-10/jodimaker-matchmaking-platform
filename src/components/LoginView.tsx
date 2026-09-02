@@ -136,9 +136,39 @@ export default function LoginView({ onLoginSuccess }: LoginViewProps) {
     }
     setCandidateLoading(true);
 
-    setTimeout(() => {
-      const allCandidates = JSON.parse(localStorage.getItem('allCandidates') || '[]');
+    setTimeout(async () => {
       const inputEmail = candidateEmail.toLowerCase().trim();
+
+      try {
+        const res = await fetch('/api/auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'login', email: inputEmail, password: candidatePassword }),
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          // MongoDB Success
+          setCandidateLoading(false);
+          showToast(`Welcome back, ${data.candidate.name}!`);
+          localStorage.removeItem('currentUserEmail');
+          localStorage.removeItem('currentCandidate');
+          localStorage.setItem('currentUserEmail', data.candidate.email);
+          setTimeout(() => { router.push('/candidate/profile'); }, 1000);
+          return;
+        } else if (!data.fallback) {
+          // API handled it but failed (e.g. wrong password)
+          setCandidateError(data.error || "Authentication failed.");
+          setCandidateLoading(false);
+          return;
+        }
+      } catch (err) {
+        console.warn("API login failed, falling back to localStorage", err);
+      }
+
+      // FALLBACK TO LOCALSTORAGE
+      const allCandidates = JSON.parse(localStorage.getItem('allCandidates') || '[]');
       const existingCandidate = allCandidates.find(
         (c: any) => c.email?.toLowerCase().trim() === inputEmail
       );
@@ -174,7 +204,7 @@ export default function LoginView({ onLoginSuccess }: LoginViewProps) {
   };
 
   // Handle Candidate Registration
-  const handleCandidateSignUp = (e: React.FormEvent) => {
+  const handleCandidateSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!candidateProfile.name || !candidateProfile.email || !candidateProfile.phone || !candidateProfile.password) {
       showToast('Please fill in all candidate fields');
@@ -187,6 +217,41 @@ export default function LoginView({ onLoginSuccess }: LoginViewProps) {
 
     const cleanEmail = candidateProfile.email.toLowerCase().trim();
 
+    try {
+      const res = await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'signup',
+          name: candidateProfile.name,
+          email: cleanEmail,
+          password: candidateProfile.password,
+          phone: candidateProfile.phone,
+          gender: candidateProfile.gender,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        localStorage.setItem('candidate_signup_name', data.candidate.name);
+        localStorage.setItem('candidate_signup_email', data.candidate.email);
+        localStorage.setItem('currentUserEmail', data.candidate.email);
+
+        showToast("Account created! Let's setup your profile.");
+        setTimeout(() => {
+          router.push('/candidate/onboarding');
+        }, 1000);
+        return;
+      } else if (!data.fallback) {
+        showToast(data.error || "Signup failed");
+        return;
+      }
+    } catch (err) {
+      console.warn("API signup failed, falling back to localStorage", err);
+    }
+
+    // FALLBACK TO LOCALSTORAGE
     const isIsha = cleanEmail === 'isha@gmail.com' || candidateProfile.name.toLowerCase().trim() === 'isha';
 
     // Create a stub candidate record

@@ -9,15 +9,18 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "jimp": "^1.6.1",
     "jspdf": "^4.2.1",
     "lucide-react": "^1.17.0",
+    "mongoose": "^9.9.4",
     "next": "16.2.7",
     "react": "19.2.4",
     "react-dom": "19.2.4"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
