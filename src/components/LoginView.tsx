@@ -72,9 +72,9 @@ export default function LoginView({ onLoginSuccess }: LoginViewProps) {
       if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === 'm') {
         e.preventDefault();
         setShowAdminModal(true);
-        // Auto-fill test admin credentials for easy demo access
-        setAdminUsername('admin');
-        setAdminPassword('password');
+        // Ensure credentials are empty so they must be manually entered
+        setAdminUsername('');
+        setAdminPassword('');
       }
     };
 
