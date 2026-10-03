@@ -63,7 +63,24 @@ const mockCandidatesDb = [
 export default function LoginView({ onLoginSuccess }: LoginViewProps) {
   const router = useRouter();
   // Main Authentication Roles: 'admin' | 'candidate'
-  const [role, setRole] = useState<'admin' | 'candidate'>('admin');
+  const [role, setRole] = useState<'admin' | 'candidate'>('candidate');
+  const [showAdminModal, setShowAdminModal] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Detect Cmd + Shift + M (Mac) or Ctrl + Shift + M (Windows/Linux)
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === 'm') {
+        e.preventDefault();
+        setShowAdminModal(true);
+        // Auto-fill test admin credentials for easy demo access
+        setAdminUsername('admin');
+        setAdminPassword('password');
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
   
   // Candidate modes: 'signin' | 'signup' | 'onboarding' | 'matches'
   const [candidateMode, setCandidateMode] = useState<'signin' | 'signup' | 'onboarding' | 'matches'>('signin');
@@ -328,7 +345,7 @@ export default function LoginView({ onLoginSuccess }: LoginViewProps) {
   };
 
   // Card width class adapter
-  const cardWidthClass = (role === 'candidate' && (candidateMode === 'onboarding' || candidateMode === 'matches'))
+  const cardWidthClass = ((candidateMode === 'onboarding' || candidateMode === 'matches'))
     ? 'max-w-2xl'
     : 'max-w-md';
 
@@ -347,122 +364,12 @@ export default function LoginView({ onLoginSuccess }: LoginViewProps) {
       )}      {/* Main Glassmorphic Panel container wrapper */}
       <div className={`bg-white/85 backdrop-blur-md border border-white/60 shadow-[0_20px_60px_rgba(0,0,0,0.06)] rounded-[32px] p-6 sm:p-6 w-full ${cardWidthClass} mx-auto mt-6 z-20 transition-all duration-300`}>
         
-        {/* Sleek Role Toggle Switch */}
-        <div className="bg-slate-100/80 p-1 rounded-full flex items-center mb-6 border border-slate-200/60 w-full max-w-xs mx-auto">
-          <button
-            type="button"
-            onClick={() => {
-              setRole('admin');
-              setAdminError('');
-              setCandidateError('');
-            }}
-            className={`flex-1 text-center py-1.5 px-4 text-xs font-bold transition-all rounded-full ${
-              role === 'admin'
-                ? 'bg-[#f64d68] text-white font-bold shadow-sm'
-                : 'text-slate-500 font-semibold hover:text-slate-800'
-            }`}
-          >
-            Matchmaker Admin
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setRole('candidate');
-              setAdminError('');
-              setCandidateError('');
-            }}
-            className={`flex-1 text-center py-1.5 px-4 text-xs font-bold transition-all rounded-full ${
-              role === 'candidate'
-                ? 'bg-[#f64d68] text-white font-bold shadow-sm'
-                : 'text-slate-500 font-semibold hover:text-slate-800'
-            }`}
-          >
-            Candidate User
-          </button>
-        </div>
-
         <div className="w-full">
-          
-          {/* ==========================================
-              VIEW A: MATCHMAKER ADMIN LOGIN VIEW
-              ========================================== */}
-          {role === 'admin' && (
-            <div className="flex flex-col items-center">
-              <h2 className="text-lg font-black tracking-tight text-[#1e1b4b] flex items-center gap-1.5 font-sans">
-                JodiMaker Admin Portal ✨
-              </h2>
-              <p className="text-slate-450 text-[9px] tracking-widest uppercase font-extrabold mt-0.5 mb-6">
-                ACCESS CREDENTIALS REQUIRED
-              </p>
-
-              <form onSubmit={handleAdminSubmit} className="w-full space-y-3" autoComplete="off">
-                {adminError && (
-                  <div className="bg-[#fff1f2] border border-[#ffe4e6] text-[#f64d68] text-[11px] px-3.5 py-2.5 rounded-2xl text-center font-bold">
-                    {adminError}
-                  </div>
-                )}
-
-                <div>
-                  <label className="block text-[#1e1b4b] text-xs font-bold tracking-wider mb-1.5 pl-4" htmlFor="admin-username">
-                    Username
-                  </label>
-                  <div className="relative">
-                    <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-400">
-                      <User className="w-3.5 h-3.5" />
-                    </span>
-                    <input
-                      id="admin-username"
-                      type="text"
-                      value={adminUsername}
-                      onChange={(e) => setAdminUsername(e.target.value)}
-                      placeholder="Username"
-                      className="w-full bg-[#eef2ff] border border-[#f0eae0] focus:border-[#f64d68]/40 focus:ring-2 focus:ring-[#f64d68]/40 rounded-full py-3.5 pl-10 pr-5 text-base font-semibold text-[#1e1b4b] placeholder-slate-400 focus:outline-none transition-all duration-300"
-                      required
-                      autoComplete="off"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-[#1e1b4b] text-xs font-bold tracking-wider mb-1.5 pl-4" htmlFor="admin-password">
-                    Password
-                  </label>
-                  <div className="relative">
-                    <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-400">
-                      <Lock className="w-3.5 h-3.5" />
-                    </span>
-                    <input
-                      id="admin-password"
-                      type="password"
-                      value={adminPassword}
-                      onChange={(e) => setAdminPassword(e.target.value)}
-                      placeholder="Password"
-                      className="w-full bg-[#eef2ff] border border-[#f0eae0] focus:border-[#f64d68]/40 focus:ring-2 focus:ring-[#f64d68]/40 rounded-full py-3.5 pl-10 pr-5 text-base font-semibold text-[#1e1b4b] placeholder-slate-400 focus:outline-none transition-all duration-300"
-                      required
-                      autoComplete="new-password"
-                    />
-                  </div>
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={adminLoading}
-                  className="w-full bg-[#f64d68] hover:bg-[#e03d57] text-white font-bold text-sm py-3.5 px-5 rounded-full shadow-md focus:outline-none focus:ring-2 focus:ring-[#f64d68]/40 transition-all duration-300 transform hover:scale-[1.01] disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2 mt-4 uppercase tracking-wider cursor-pointer"
-                >
-                  {adminLoading ? (
-                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-                  ) : (
-                    'ACCESS DASHBOARD'
-                  )}
-                </button>
-              </form>
-            </div>
-          )}
 
           {/* ==========================================
               VIEW B: CANDIDATE LOGIN & SIGN UP GATEWAY
               ========================================== */}
-          {role === 'candidate' && candidateMode === 'signin' && (
+          {candidateMode === 'signin' && (
             <div className="flex flex-col items-center">
               <h2 className="text-xl font-black tracking-tight text-[#1e1b4b] flex items-center gap-1.5 font-sans">
                 Candidate Portal ✨
@@ -546,7 +453,7 @@ export default function LoginView({ onLoginSuccess }: LoginViewProps) {
           {/* ==========================================
               VIEW C: CANDIDATE SIGN UP FORM
               ========================================== */}
-          {role === 'candidate' && candidateMode === 'signup' && (
+          {candidateMode === 'signup' && (
             <div className="flex flex-col items-center">
               <h2 className="text-xl font-black tracking-tight text-[#1e1b4b] flex items-center gap-1.5 font-sans">
                 Join JodiMaker ✨
@@ -628,7 +535,7 @@ export default function LoginView({ onLoginSuccess }: LoginViewProps) {
           {/* ==========================================
               VIEW D: CANDIDATE PROFILE DETAILS FORM (ONBOARDING)
               ========================================== */}
-          {role === 'candidate' && candidateMode === 'onboarding' && (
+          {candidateMode === 'onboarding' && (
             <div className="space-y-6">
               
               {/* Onboarding Header */}
@@ -915,7 +822,7 @@ export default function LoginView({ onLoginSuccess }: LoginViewProps) {
           {/* ==========================================
               VIEW E: CALCULATED COMPATIBLE MATCHES DIRECTORY
               ========================================== */}
-          {role === 'candidate' && candidateMode === 'matches' && (
+          {candidateMode === 'matches' && (
             <div className="space-y-6">
               
               {/* Results summary header */}
@@ -974,6 +881,93 @@ export default function LoginView({ onLoginSuccess }: LoginViewProps) {
 
       </div>
 
+
+      {/* Admin Login Modal */}
+      {showAdminModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-6 relative">
+            <button 
+              onClick={() => setShowAdminModal(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 font-bold p-1"
+            >
+              ✕
+            </button>
+            <div className="flex flex-col items-center pt-2">
+              <h2 className="text-lg font-black tracking-tight text-[#1e1b4b] flex items-center gap-1.5 font-sans">
+                MatchMaker Admin Portal ✨
+              </h2>
+              <p className="text-slate-450 text-[9px] tracking-widest uppercase font-extrabold mt-0.5 mb-6">
+                ACCESS CREDENTIALS REQUIRED
+              </p>
+
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                handleAdminSubmit(e);
+              }} className="w-full space-y-3" autoComplete="off">
+                {adminError && (
+                  <div className="bg-[#fff1f2] border border-[#ffe4e6] text-[#f64d68] text-[11px] px-3.5 py-2.5 rounded-2xl text-center font-bold">
+                    {adminError}
+                  </div>
+                )}
+
+                <div>
+                  <label className="block text-[#1e1b4b] text-xs font-bold tracking-wider mb-1.5 pl-4" htmlFor="admin-username-modal">
+                    Username
+                  </label>
+                  <div className="relative">
+                    <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-400">
+                      <User className="w-3.5 h-3.5" />
+                    </span>
+                    <input
+                      id="admin-username-modal"
+                      type="text"
+                      value={adminUsername}
+                      onChange={(e) => setAdminUsername(e.target.value)}
+                      placeholder="Username"
+                      className="w-full bg-[#eef2ff] border border-[#f0eae0] focus:border-[#f64d68]/40 focus:ring-2 focus:ring-[#f64d68]/40 rounded-full py-3.5 pl-10 pr-5 text-base font-semibold text-[#1e1b4b] placeholder-slate-400 focus:outline-none transition-all duration-300"
+                      required
+                      autoComplete="off"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[#1e1b4b] text-xs font-bold tracking-wider mb-1.5 pl-4" htmlFor="admin-password-modal">
+                    Password
+                  </label>
+                  <div className="relative">
+                    <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-400">
+                      <Lock className="w-3.5 h-3.5" />
+                    </span>
+                    <input
+                      id="admin-password-modal"
+                      type="password"
+                      value={adminPassword}
+                      onChange={(e) => setAdminPassword(e.target.value)}
+                      placeholder="Password"
+                      className="w-full bg-[#eef2ff] border border-[#f0eae0] focus:border-[#f64d68]/40 focus:ring-2 focus:ring-[#f64d68]/40 rounded-full py-3.5 pl-10 pr-5 text-base font-semibold text-[#1e1b4b] placeholder-slate-400 focus:outline-none transition-all duration-300"
+                      required
+                      autoComplete="new-password"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={adminLoading}
+                  className="w-full bg-[#f64d68] hover:bg-[#e03d57] text-white font-bold text-sm py-3.5 px-5 rounded-full shadow-md focus:outline-none focus:ring-2 focus:ring-[#f64d68]/40 transition-all duration-300 transform hover:scale-[1.01] flex justify-center items-center gap-2 mt-4 uppercase tracking-wider cursor-pointer"
+                >
+                  {adminLoading ? (
+                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                  ) : (
+                    'ACCESS DASHBOARD'
+                  )}
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
