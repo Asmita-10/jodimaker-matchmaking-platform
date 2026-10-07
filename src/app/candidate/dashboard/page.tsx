@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useProfiles } from '@/context/ProfileContext';
 import { Profile } from '@/types';
-import { Heart, Sparkles, LogOut, Zap, MapPin, Briefcase, TrendingUp } from 'lucide-react';
+import { Heart, Sparkles, LogOut, Zap, MapPin, Briefcase, TrendingUp, User } from 'lucide-react';
 import CandidateFilterBar, { FilterState } from '@/components/CandidateFilterBar';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -128,13 +128,22 @@ export default function CandidateDashboardPage() {
           </div>
           <span className="text-sm font-black tracking-tight">JodiMaker Candidate Dashboard</span>
         </div>
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-[#f64d68] bg-white hover:bg-[#fdf3f3] px-3.5 py-2 rounded-xl border border-[#f0eae0] hover:border-[#fbc4c4] transition-all font-bold cursor-pointer"
-        >
-          <LogOut className="w-3.5 h-3.5" />
-          Exit
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => router.push('/candidate/profile')}
+            className="flex items-center gap-1.5 text-xs text-[#f64d68] hover:text-white bg-[#f64d68]/10 hover:bg-[#f64d68] px-3.5 py-2 rounded-xl border border-[#f64d68]/20 hover:border-[#f64d68] transition-all duration-300 font-bold cursor-pointer shadow-sm"
+          >
+            <User className="w-3.5 h-3.5" />
+            <span>My Profile</span>
+          </button>
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-[#f64d68] bg-white hover:bg-[#fdf3f3] px-3.5 py-2 rounded-xl border border-[#f0eae0] hover:border-[#fbc4c4] transition-all font-bold cursor-pointer"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+            Exit
+          </button>
+        </div>
       </header>
 
       <main className="max-w-4xl mx-auto px-4 pt-8 space-y-6">

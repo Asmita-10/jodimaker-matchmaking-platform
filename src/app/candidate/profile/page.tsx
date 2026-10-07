@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useProfiles } from '@/context/ProfileContext';
 import { Profile, MatchPair, ChatMessage } from '@/types';
 import OnboardingWizard from '@/components/OnboardingWizard';
-import { Heart, Sparkles, Send, User, Briefcase, GraduationCap, MapPin, Smile, Check, ShieldAlert, LogOut, CheckCircle, Flame, Mail, Trash2 } from 'lucide-react';
+import { Heart, Sparkles, Send, User, Briefcase, GraduationCap, MapPin, Smile, Check, ShieldAlert, LogOut, CheckCircle, Flame, Mail, Trash2, LayoutDashboard } from 'lucide-react';
 
 export default function CandidateProfilePage() {
   const router = useRouter();
@@ -240,18 +240,27 @@ export default function CandidateProfilePage() {
       {/* Navigation Banner Header */}
       <header className="h-16 bg-white/80 backdrop-blur-md border-b border-[#f0eae0] px-4 md:px-8 flex items-center justify-between sticky top-0 z-30 shadow-sm">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 bg-gradient-to-tr from-rose-500 to-rose-400 rounded-lg flex items-center justify-center">
+          <div className="w-7 h-7 bg-gradient-to-tr from-[#f64d68] to-rose-400 rounded-lg flex items-center justify-center">
             <Heart className="text-white w-3.5 h-3.5 fill-current" />
           </div>
           <span className="text-sm font-black tracking-tight">JodiMaker Candidate Workspace</span>
         </div>
-        <button 
-          onClick={handleLogout}
-          className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-[#f43f5e] bg-white hover:bg-[#fdf3f3] px-3.5 py-2 rounded-xl border border-[#f0eae0] hover:border-[#fbc4c4] transition-all duration-300 font-bold cursor-pointer"
-        >
-          <LogOut className="w-3.5 h-3.5" />
-          Logout
-        </button>
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={() => router.push('/candidate/dashboard')}
+            className="flex items-center gap-1.5 text-xs text-[#f64d68] hover:text-white bg-[#f64d68]/10 hover:bg-[#f64d68] px-3.5 py-2 rounded-xl border border-[#f64d68]/20 hover:border-[#f64d68] transition-all duration-300 font-bold cursor-pointer shadow-sm"
+          >
+            <LayoutDashboard className="w-3.5 h-3.5" />
+            <span>Go to Dashboard</span>
+          </button>
+          <button 
+            onClick={handleLogout}
+            className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-[#f64d68] bg-white hover:bg-[#fdf3f3] px-3.5 py-2 rounded-xl border border-[#f0eae0] hover:border-[#fbc4c4] transition-all duration-300 font-bold cursor-pointer"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+            Logout
+          </button>
+        </div>
       </header>
 
       {/* Main Container */}
